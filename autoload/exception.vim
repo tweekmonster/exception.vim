@@ -69,10 +69,10 @@ function! exception#trace() abort
       let pat .= func.'\>'
 
       for line in readfile(src)
+        let lnum += 1
         if line =~# pat
           break
         endif
-        let lnum += 1
       endfor
 
       if !empty(src) && !empty(func)
@@ -80,7 +80,7 @@ function! exception#trace() abort
         call add(errlist, {
               \   'text': printf('%*s. %s', nw, '#'.i, t),
               \   'filename': fname,
-              \   'lnum': str2nr(lnum),
+              \   'lnum': lnum,
               \   'type': 'I',
               \ })
       endif
