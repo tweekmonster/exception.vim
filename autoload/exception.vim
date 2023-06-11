@@ -56,7 +56,7 @@ function! exception#trace() abort
         continue
       endif
 
-      let src = fnamemodify(matchstr(verb[1], 'Last set from \zs.\+'), ':p')
+      let src = fnamemodify(matchstr(verb[1], 'Last set from \zs.\+\ze\%( line \d\+\)'), ':p')
       if !filereadable(src)
         continue
       endif
