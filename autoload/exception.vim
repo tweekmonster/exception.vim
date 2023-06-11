@@ -68,9 +68,21 @@ function! exception#trace() abort
       endif
       let pat .= func.'\>'
 
-      for line in readfile(src)
-        let lnum += 1
+      let function_offset = 0
+      let function_found = 0
+      let line_body = ''
+
+      for [index, line] in items(readfile(src))
+        if !function_found
+          let function_offset += 1
+        endif
+
         if line =~# pat
+          let function_found = 1
+        endif
+
+        if lnum + function_offset == index + 1
+          let line_body = trim(line)
           break
         endif
       endfor
@@ -78,9 +90,9 @@ function! exception#trace() abort
       if !empty(src) && !empty(func)
         let fname = fnamemodify(src, ':.')
         call add(errlist, {
-              \   'text': printf('%*s. %s', nw, '#'.i, t),
+              \   'text': printf('%*s. %s: %s', nw, '#'.i, t, line_body),
               \   'filename': fname,
-              \   'lnum': lnum,
+              \   'lnum': function_offset + lnum,
               \   'type': 'I',
               \ })
       endif
